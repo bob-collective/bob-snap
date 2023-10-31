@@ -21,7 +21,6 @@ import { SupportedCoins } from '../../../constant/supportedCoins';
 import { bitcoinUnitMap } from '../../../lib/unit';
 import { logger } from '../../../logger';
 
-
 interface AddressTypeProps {
   open: boolean;
   close: () => void;
@@ -37,38 +36,54 @@ export const addressTypeOptions: AddressType[] = [
   { label: 'HD Native SegWit (Bech32)', type: BitcoinScriptType.P2WPKH },
   { label: 'HD Nested SegWit (P2SH)', type: BitcoinScriptType.P2SH_P2WPKH },
   { label: 'HD Legacy (P2PKH)', type: BitcoinScriptType.P2PKH },
+  { label: 'HD Taproot (P2TR)', type: BitcoinScriptType.P2TR },
 ];
 
-type Balances = Record<BitcoinScriptType, string>
+type Balances = Record<BitcoinScriptType, string>;
 
-export const AddressType = (({ open, close, onChanged }: AddressTypeProps) => {
-  const { settings: { scriptType, setScriptType, network }, switchToAccount, current, connectedScriptTypes } = useAppStore();
+export const AddressType = ({ open, close, onChanged }: AddressTypeProps) => {
+  const {
+    settings: { scriptType, setScriptType, network },
+    switchToAccount,
+    current,
+    connectedScriptTypes,
+  } = useAppStore();
   const [balances, setBalances] = useState<Balances>();
 
   useEffect(() => {
-    if(open) {
-      queryCoinV2().then(result => {
-        const coins = Object.entries(NETWORK_SCRIPT_TO_COIN[network]) as [BitcoinScriptType, SupportedCoins][];
-        const allBalances = coins.reduce((allBalances, [scriptType, coin]) => {
-          const balance = result.coins[coin]?.balance;
-          const balanceInBtc = balance
-            ? satoshiToBTC(Number(balance))
-            : (connectedScriptTypes(network).includes(scriptType)) ? 0 : '--';
-          return {
-            ...allBalances,
-            [scriptType]: balanceInBtc
-          };
-        }, {} as Balances);
-        setBalances(allBalances);
-      }).catch((e) => {
-        logger.error(e);
-      });
+    if (open) {
+      queryCoinV2()
+        .then((result) => {
+          const coins = Object.entries(NETWORK_SCRIPT_TO_COIN[network]) as [
+            BitcoinScriptType,
+            SupportedCoins,
+          ][];
+          const allBalances = coins.reduce(
+            (allBalances, [scriptType, coin]) => {
+              const balance = result.coins[coin]?.balance;
+              const balanceInBtc = balance
+                ? satoshiToBTC(Number(balance))
+                : connectedScriptTypes(network).includes(scriptType)
+                ? 0
+                : '--';
+              return {
+                ...allBalances,
+                [scriptType]: balanceInBtc,
+              };
+            },
+            {} as Balances,
+          );
+          setBalances(allBalances);
+        })
+        .catch((e) => {
+          logger.error(e);
+        });
     } else {
       setBalances(undefined);
     }
   }, [open, network]);
 
-  const onAddressTypedChecked  = (addressType: AddressType) => {
+  const onAddressTypedChecked = (addressType: AddressType) => {
     setScriptType(addressType.type);
     current && switchToAccount(current.mfp, addressType.type, network);
     onChanged();
@@ -77,12 +92,10 @@ export const AddressType = (({ open, close, onChanged }: AddressTypeProps) => {
   return (
     <TransitionablePortal
       open={open}
-      transition={{ animation: 'fade up', duration: '300' }}
-    >
+      transition={{ animation: 'fade up', duration: '300' }}>
       <Modal
         open={true}
-        style={{ width: '440px', marginTop: '160px', borderRadius: '20px' }}
-      >
+        style={{ width: '440px', marginTop: '160px', borderRadius: '20px' }}>
         <ModalHeader>
           <ModalHeaderContainer>
             <ModalHeaderLabel>Address Type</ModalHeaderLabel>
@@ -92,12 +105,19 @@ export const AddressType = (({ open, close, onChanged }: AddressTypeProps) => {
 
         <AddressContainer>
           {addressTypeOptions.map((item) => (
-            <AddressItem onClick={() => onAddressTypedChecked(item)} key={item.label}>
+            <AddressItem
+              onClick={() => onAddressTypedChecked(item)}
+              key={item.label}>
               <AddressItemLabel>
                 <span>{item.label}</span>
-                <span>{balances?.[item.type] ?? '--'} {bitcoinUnitMap[network].BTC}</span>
+                <span>
+                  {balances?.[item.type] ?? '--'} {bitcoinUnitMap[network].BTC}
+                </span>
               </AddressItemLabel>
-              <AddressItemRadio value={item.label} checked={scriptType === item.type}/>
+              <AddressItemRadio
+                value={item.label}
+                checked={scriptType === item.type}
+              />
             </AddressItem>
           ))}
         </AddressContainer>
@@ -105,7 +125,8 @@ export const AddressType = (({ open, close, onChanged }: AddressTypeProps) => {
         <AddressTips>
           <p>Choose the correct address type to gain access to your assets.</p>
           <p>
-            If this is the first time you are using this secret key, we recommend you to use
+            If this is the first time you are using this secret key, we
+            recommend you to use
             <span>{' "HD Native Segwit (Bech32)" '}</span>
             by default for lower transactions fees.
           </p>
@@ -113,4 +134,4 @@ export const AddressType = (({ open, close, onChanged }: AddressTypeProps) => {
       </Modal>
     </TransitionablePortal>
   );
-});
+};

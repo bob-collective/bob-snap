@@ -7,12 +7,13 @@ export enum BitcoinScriptType {
   P2PKH = 'P2PKH',
   P2SH_P2WPKH = 'P2SH-P2WPKH',
   P2WPKH = 'P2WPKH',
+  P2TR = 'P2WPKH',
 }
 
 export enum BitcoinUnit {
   BTC = 'BTC',
   Sats = 'sats',
-  Currency = 'Currency'
+  Currency = 'Currency',
 }
 
 export type Utxo = {

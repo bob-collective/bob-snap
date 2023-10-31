@@ -73,6 +73,16 @@ export const networkAndScriptMap: networkAndScriptType = {
     scriptType: BitcoinScriptType.P2WPKH,
     config: { private: 0x045f18bc, public: 0x045f1cf6 },
   },
+  wpub: {
+    network: BitcoinNetwork.Test,
+    scriptType: BitcoinScriptType.P2TR,
+    config: { private: 0x045f18bc, public: 0x045f1cf6 },
+  },
+  wprv: {
+    network: BitcoinNetwork.Test,
+    scriptType: BitcoinScriptType.P2TR,
+    config: { private: 0x045f18bc, public: 0x045f1cf6 },
+  },
 };
 
 export const detectNetworkAndScriptType = (extendedPubKey: string) => {
@@ -157,7 +167,6 @@ const composePsbt = (
   network: BitcoinNetwork,
   scriptType: BitcoinScriptType,
 ) => {
-
   let networkConfig: any;
   if (network === BitcoinNetwork.Main) {
     networkConfig = networks.bitcoin;

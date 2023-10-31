@@ -8,7 +8,7 @@ export interface GetPublicExtendedKeyRequest {
 
 export interface GetAllXpubsRequest {
   method: 'btc_getAllXpubs';
-  params: Record<string, never>
+  params: Record<string, never>;
 }
 
 export interface SignPsbt {
@@ -46,7 +46,7 @@ export interface GetLNDataFromSnap {
   params: {
     key: KeyOptions;
     walletId?: string;
-    type?: 'get' | 'refresh'
+    type?: 'get' | 'refresh';
   };
 }
 
@@ -84,6 +84,7 @@ export enum ScriptType {
   P2PKH = 'P2PKH',
   P2SH_P2WPKH = 'P2SH-P2WPKH',
   P2WPKH = 'P2WPKH',
+  P2TR = 'P2TR',
 }
 
 export enum BitcoinNetwork {
