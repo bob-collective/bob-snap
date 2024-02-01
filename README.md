@@ -14,6 +14,10 @@ Additional information can be found [here](https://docs.metamask.io/guide/snaps.
 
 A demo application using this package can be found at [https://ordinals.gobob.xyz](https://ordinals.gobob.xyz). Further documentation can be found here: [https://docs.gobob.xyz/docs/build/examples/metamask-ordinals/](https://docs.gobob.xyz/docs/build/examples/metamask-ordinals/)
 
+## Acknowledgements
+
+This project was forked from https://github.com/snapdao/btcsnap.
+
 ## License
 
 This project is dual-licensed under Apache 2.0 and MIT terms:
