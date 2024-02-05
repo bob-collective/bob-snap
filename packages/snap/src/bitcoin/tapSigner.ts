@@ -25,14 +25,7 @@ function getTapSignersFromHD(
         throw new Error('Need tapBip32Derivation to sign with HD');
     }
     const myDerivations = input.tapBip32Derivation
-        .map(bipDv => {
-            if (bipDv.masterFingerprint.equals(hdKeyPair.fingerprint)) {
-                return bipDv;
-            } else {
-                return;
-            }
-        })
-        .filter(v => !!v);
+        .filter(bipDv => bipDv.masterFingerprint.equals(hdKeyPair.fingerprint));
     if (myDerivations.length === 0) {
         throw new Error(
             'Need one tapBip32Derivation masterFingerprint to match the HDSigner fingerprint',
