@@ -1,6 +1,15 @@
-# BTCSnap with support for Ordinals
+# BOB Snap
 
-Allow users to inscribe and transfer ordinals, and transfer BTC using Metamask.
+A MetaMask snap for all things Bitcoin.
+
+## Features
+
+Allow users to:
+
+- Receive and transfer BTC
+- Inscribe and transfer ordinals
+- Mint, receive, and transfer BRC20
+- Runes support
 
 > **This application is only supported on testnet with Metamask Flask**
 
