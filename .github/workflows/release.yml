@@ -33,7 +33,7 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_SOURCE: ${{ secrets.SENTRY_SOURCE }}
-          SENTRY_PROJECT: btcsnap-${{ inputs.environment }}
+          SENTRY_PROJECT: bob-snap-${{ inputs.environment }}
           ENV: ${{ inputs.environment }}
       - name: Publish to S3
         working-directory: packages/example

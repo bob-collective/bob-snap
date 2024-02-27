@@ -10,13 +10,13 @@ Additional information can be found [here](https://docs.metamask.io/guide/snaps.
 
 ### Usage
 
-1. Enable `btcsnap` in your dapp
+1. Enable `bob-snap` in your dapp
 
 ```ts
 const result: boolean = await ethereum.request({
   method: 'wallet_requestSnaps',
   params: {
-    'npm:@gobob/btcsnap': {},
+    'npm:@gobob/bob-snap': {},
   },
 });
 ```
@@ -27,7 +27,7 @@ const result: boolean = await ethereum.request({
 const response = await ethereum.request({
   method: 'wallet_invokeSnap',
   params: {
-    snapId: 'npm:@gobob/btcsnap',
+    snapId: 'npm:@gobob/bob-snap',
     request: {
       method: 'btc_getPublicExtendedKey',
       params: {
@@ -45,7 +45,7 @@ const response = await ethereum.request({
 const result: {txId: string; txHex: string} = await ethereum.request({
   method: 'wallet_invokeSnap',
   params: {
-    snapId: 'npm:@gobob/btcsnap',
+    snapId: 'npm:@gobob/bob-snap',
     request: {
       method: 'btc_signPsbt',
       params: {
