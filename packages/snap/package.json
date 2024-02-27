@@ -1,7 +1,7 @@
 {
-  "name": "@gobob/btcsnap",
+  "name": "@gobob/bob-snap",
   "version": "2.0.8",
-  "description": "btcsnap: Metamask snap to manage your bitcoin",
+  "description": "BOB: Metamask snap to manage your BTC, ordinals, and more",
   "contributors": [
     {
       "name": "aaronisme",
@@ -15,7 +15,7 @@
   "homepage": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bob-collective/btcsnap"
+    "url": "https://github.com/bob-collective/bob-snap"
   },
   "license": "ISC",
   "main": "dist/index.js",

@@ -4,7 +4,7 @@
   "proposedName": "BOB",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bob-collective/btcsnap"
+    "url": "https://github.com/bob-collective/bob-snap"
   },
   "source": {
     "shasum": "3gkQ5n9BJXvJnuTZ0KobpTgDQIP4Pq+sp0ZyEipYn2o=",
@@ -12,7 +12,7 @@
       "npm": {
         "filePath": "dist/bundle.js",
         "iconPath": "images/bob-logo.svg",
-        "packageName": "@gobob/btcsnap",
+        "packageName": "@gobob/bob-snap",
         "registry": "https://registry.npmjs.org"
       }
     }
