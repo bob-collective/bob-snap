@@ -1,47 +1,27 @@
-name: "Deploy"
+name: "Publish snap to npm"
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: "Environment to deploy snap"
-        type: environment
-        required: true
+  push:
+
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
     timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: ./packages/snap
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
-      - name: install dependencies
+          node-version: 20
+          cache: yarn
+      - name: Install dependencies
         run: yarn install
-      - name: run test
+      - name: Test
         run: yarn test
       - name: Build
-        run: CI=false yarn run build
-        working-directory: packages/example
+        run: yarn build
+      - name: Publish to NPM
+        run: yarn publish
         env:
-          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
-          BACKEND_API_AUTH: ${{ secrets.BACKEND_API_AUTH }}
-          BACKEND_API_DOMAIN: ${{ secrets.BACKEND_API_DOMAIN }}
-          SNAP_BACKEND_API_DOMAIN: ${{ secrets.SNAP_BACKEND_API_DOMAIN }}
-          SNAP_BACKEND_API_AUTH: ${{ secrets.SNAP_BACKEND_API_AUTH }}
-          FIAT_MRCR_API_WIDGET_ID: ${{ secrets.FIAT_MRCR_API_WIDGET_ID }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_SOURCE: ${{ secrets.SENTRY_SOURCE }}
-          SENTRY_PROJECT: bob-snap-${{ inputs.environment }}
-          ENV: ${{ inputs.environment }}
-      - name: Publish to S3
-        working-directory: packages/example
-        run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip -qq awscliv2.zip
-          sudo ./aws/install --update
-          aws configure set aws_access_key_id ${{ secrets.AWS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set default.region ${{ secrets.AWS_REGION }}
-          aws s3 sync --exclude "*.map" build/ s3://${{ secrets.BUCKET_NAME }}/ --delete
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
