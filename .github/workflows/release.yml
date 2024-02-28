@@ -1,6 +1,8 @@
 name: "Publish snap to npm"
 on:
   push:
+    tags:
+      - '*'
 
 jobs:
   publish:
