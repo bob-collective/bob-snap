@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          scope: "@gobob"
           cache: yarn
       - name: Install dependencies
         run: yarn install
