@@ -11,6 +11,7 @@ import {
   saveLNDataToSnap,
   getLNDataFromSnap,
   signLNInvoice,
+  signMessage,
 } from './rpc';
 import { SnapError, RequestErrors } from './errors';
 import * as ecc from "@bitcoin-js/tiny-secp256k1-asmjs";
@@ -92,6 +93,8 @@ export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
       );
     case 'btc_signLNInvoice':
       return signLNInvoice(origin, snap, request.params.invoice);
+    case 'btc_signMessage':
+      return signMessage(origin, snap, request.params.message, request.params.hdPath);
     default:
       throw SnapError.of(RequestErrors.MethodNotSupport);
   }

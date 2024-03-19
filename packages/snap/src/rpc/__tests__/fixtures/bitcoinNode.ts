@@ -28,13 +28,20 @@ export const LNDataFromSnap = {
 }
 
 export const LNDataToSnap = {
-   domain : 'www.justsnap.io',
-   walletId: "id00000001",
-   credential: "testAdmin:123456",
-   password: "testPassword",
-   invoice: "lnbc100u1p34k6pppp5332v7z238qt7jrhjz5mkhckdx2uuc50d8xzpfyanj8p3plav9z5sdq8w3jhxaqcqzpgxqyz5vqsp5stj40j57779ahamqp9p3rpq0eudt75f9kxw7yyhuwwaxfmuqsqzq9qyyssqqudc8qc5np9rj5ypn6p9jlafn5sc02nwp60at38cwem4ycz9p9pqdlknk5k3yfayh3pzhndjt2gev8g4rqtnr6art5cagr2c0f3xkxqqfx27k5"
+  domain: 'www.justsnap.io',
+  walletId: "id00000001",
+  credential: "testAdmin:123456",
+  password: "testPassword",
+  invoice: "lnbc100u1p34k6pppp5332v7z238qt7jrhjz5mkhckdx2uuc50d8xzpfyanj8p3plav9z5sdq8w3jhxaqcqzpgxqyz5vqsp5stj40j57779ahamqp9p3rpq0eudt75f9kxw7yyhuwwaxfmuqsqzq9qyyssqqudc8qc5np9rj5ypn6p9jlafn5sc02nwp60at38cwem4ycz9p9pqdlknk5k3yfayh3pzhndjt2gev8g4rqtnr6art5cagr2c0f3xkxqqfx27k5"
 }
 
 export const LNSignature = {
   signature: "1f9b311f576424fe87c769ab9146f6b3613399b0b54f13b781639b2bc3f40e22706012192cdcdaa9830b5a21494e54740cfcec3b1e7f75d35e1c9afeb143d5c1ed"
+}
+
+export const MessageAndSig = {
+  domain: 'www.justsnap.io',
+  message: "Hello World!",
+  hdPath: `m/84'/0'/0'/0/0`,
+  signature: "20d222a9945150cf3b3bb46eb3a3d333a5c0a91cd015bfcbceec0f3d612997fe81413b595ee7b3d3e50d9fb3acd8f852c428be06fc3979cbda77e8b73040b3da17"
 }

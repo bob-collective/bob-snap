@@ -78,6 +78,14 @@ export interface SignLNInvoice {
   };
 }
 
+export interface SignMessage {
+  method: 'btc_signMessage';
+  params: {
+    message: string;
+    hdPath: string;
+  };
+}
+
 export type MetamaskBTCRpcRequest =
   | GetAllXpubsRequest
   | GetPublicExtendedKeyRequest
@@ -87,7 +95,8 @@ export type MetamaskBTCRpcRequest =
   | ManageNetwork
   | SaveLNDataToSnap
   | GetLNDataFromSnap
-  | SignLNInvoice;
+  | SignLNInvoice
+  | SignMessage;
 
 export type BTCMethodCallback = (
   originString: string,
