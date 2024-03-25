@@ -31,7 +31,7 @@ export async function extractAccountPrivateKey(snap: Snap, network: Network, scr
             path,
             curve: CRYPTO_CURVE
         },
-    }) as SLIP10Node
+    }) as SLIP10Node;
 
     const privateKeyBuffer = Buffer.from(trimHexPrefix(slip10Node.privateKey), "hex")
     const chainCodeBuffer = Buffer.from(trimHexPrefix(slip10Node.chainCode), "hex")
