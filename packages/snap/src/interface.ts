@@ -12,6 +12,7 @@ export interface GetAllXpubsRequest {
 }
 
 export interface SignPsbtOptions {
+  autoFinalize: boolean,
   signInputOpts?: SignInputOptions[];
 }
 
