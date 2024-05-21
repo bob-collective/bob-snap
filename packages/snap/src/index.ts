@@ -44,7 +44,6 @@ export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
         origin,
         snap,
       );
-    // keep this for backwards compatibility
     case 'btc_signPsbt':
       return signPsbt(
         origin,

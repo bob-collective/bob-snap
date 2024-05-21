@@ -117,18 +117,15 @@ export class BtcPsbt {
         }
     }
 
-    signPsbt(accountSigner: AccountSigner, opts: SignPsbtOptions = {}) {
+    signPsbt(accountSigner: AccountSigner, opts: SignPsbtOptions = { autoFinalize: true }) {
         try {
             const signInputOpts = opts.signInputOpts !== undefined ? opts.signInputOpts : new Array<SignInputOptions>(this.psbt.data.inputs.length).fill({});
             signAllInputsHD(this.psbt, accountSigner, signInputOpts);
-            if (validateSignaturesOfAllInputs(this.psbt, validator, schnorrValidator)) {
+            if (!opts.autoFinalize) {
+                return this.psbt.toBase64();
+            } else if (validateSignaturesOfAllInputs(this.psbt, validator, schnorrValidator)) {
                 this.psbt.finalizeAllInputs();
-                const txId = this.psbt.extractTransaction().getId();
-                const txHex = this.psbt.extractTransaction().toHex();
-                return {
-                    txId,
-                    txHex
-                }
+                return this.psbt.toBase64();
             } else {
                 throw new Error('Signature verification failed');
             }

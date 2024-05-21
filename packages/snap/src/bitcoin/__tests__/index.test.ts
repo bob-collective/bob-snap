@@ -106,13 +106,22 @@ changeAddress: tb1qx5wzl3f27d6dgzk9u7h47pqdts60xdpax4w5rf
 
     it('should be able to sign transaction and extract txId and txHex', () => {
       const tx = new BtcPsbt(psbtFixture.base64, BitcoinNetwork.Test);
-      const { txId, txHex } = tx.signPsbt(signer);
+      const psbt = Psbt.fromBase64(tx.signPsbt(signer));
+      expect(psbt.data.inputs[0].finalScriptWitness).toBeDefined();
+      const txId = psbt.extractTransaction().getId();
+      const txHex = psbt.extractTransaction().toHex();
       expect(txId).toBe(
         '4db856b1b7049cce26dc298458796f66d0dee39a5d0651b4c51aa0c66326adec',
       );
       expect(txHex).toBe(
         '020000000001012a4fa3e26d8dbf1c7bcf220e051ef4c74197f374457ccec93b7a6d8445e0ac600000000000ffffffff02400d03000000000016001405b3fe2c8306cc8134b39a5d0512d16ff4f791869acd0b0000000000160014351c2fc52af374d40ac5e7af5f040d5c34f3343d02483045022100cb9909386da8eeda5c505b904a41f3a539d03e9c3af2d2030a6c6bcd3125884802203b922ab5815342501c58dec34317c8a7f02dddccabebbd3deb814dbccb8b4809012103481e8f9077010011be6b251eccc7da40dd22ebe0cee03c31b45fa76ee596a7e200000000',
       );
+    });
+
+    it('should be able to sign transaction without finalizing', () => {
+      const tx = new BtcPsbt(psbtFixture.base64, BitcoinNetwork.Test);
+      const psbt = Psbt.fromBase64(tx.signPsbt(signer, { autoFinalize: false }));
+      expect(psbt.data.inputs[0].finalScriptWitness).toBeUndefined();
     });
 
     it('should be able to sign taproot transaction and extract txId and txHex', () => {
@@ -154,7 +163,9 @@ changeAddress: tb1qx5wzl3f27d6dgzk9u7h47pqdts60xdpax4w5rf
         .toBase64();
 
       const tx = new BtcPsbt(psbtBase64, BitcoinNetwork.Test);
-      const { txId, txHex } = tx.signPsbt(signer);
+      const psbt = Psbt.fromBase64(tx.signPsbt(signer));
+      const txId = psbt.extractTransaction().getId();
+      const txHex = psbt.extractTransaction().toHex();
       expect(txId).toBe(
         'e0a70feca465add48d89fade7c66b68589fc95f21c8e69e3121a4bd6cee3302d',
       );

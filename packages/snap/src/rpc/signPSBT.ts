@@ -9,17 +9,17 @@ import { heading, panel, text, divider } from "@metamask/snaps-ui";
 export async function signPsbt(
   domain: string,
   snap: Snap,
-  psbt: string,
+  psbtBase64: string,
   network: BitcoinNetwork,
   scriptType: ScriptType,
   opts?: SignPsbtOptions
-): Promise<{ txId: string, txHex: string }> {
+): Promise<string> {
   const snapNetwork = await getPersistedData<BitcoinNetwork>(snap, "network", '' as BitcoinNetwork);
   if (snapNetwork != network) {
     throw SnapError.of(RequestErrors.NetworkNotMatch);
   }
 
-  const btcPsbt = new BtcPsbt(psbt, snapNetwork);
+  const btcPsbt = new BtcPsbt(psbtBase64, snapNetwork);
   const txDetails = btcPsbt.extractPsbtJson()
 
   const result = await snap.request({
