@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "BOB: Metamask snap to manage your Bitcoin",
   "proposedName": "BOB",
   "repository": {
@@ -7,7 +7,7 @@
     "url": "https://github.com/bob-collective/bob-snap"
   },
   "source": {
-    "shasum": "0H2nXkWHCmZN44Zyf19/PMUNNZYuywQJyUmir3Jv7/E=",
+    "shasum": "HHxMGzE7qqYdjyYNB6L+2droaS0ElKFS1CIyDl4pIo0=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
