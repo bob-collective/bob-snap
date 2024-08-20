@@ -1,50 +1,61 @@
-import { address, Network, Psbt, Transaction } from 'bitcoinjs-lib';
+import { address, Network, opcodes, Psbt, script, Transaction } from 'bitcoinjs-lib';
 import { getNetwork } from './getNetwork';
 import { BitcoinNetwork } from '../interface';
 
 export class PsbtHelper {
-  private tx: Psbt;
+  private psbt: Psbt;
   private network: Network;
 
   constructor(psbt: Psbt, network: BitcoinNetwork) {
     this.network = getNetwork(network);
-    this.tx = psbt;
+    this.psbt = psbt;
   }
 
   get inputAmount() {
-    return this.tx.data.inputs.reduce((total, input, index) => {
-      const vout = this.tx.txInputs[index].index;
+    return this.psbt.data.inputs.reduce((total, input, index) => {
+      const vout = this.psbt.txInputs[index].index;
       const prevTx = Transaction.fromHex(input.nonWitnessUtxo.toString('hex'));
       return total + prevTx.outs[vout].value;
     }, 0);
   }
 
   get sendAmount() {
-    return this.tx.txOutputs
+    return this.psbt.txOutputs
       .filter(output => !this.changeAddresses.includes(output.address))
       .reduce((amount, output) => amount + output.value, 0);
   }
 
   get fee() {
-    const outputAmount = this.tx.txOutputs.reduce((amount, output) => amount + output.value, 0);
+    const outputAmount = this.psbt.txOutputs.reduce((amount, output) => amount + output.value, 0);
     return this.inputAmount - outputAmount;
   }
 
   get fromAddresses() {
-    return this.tx.data.inputs.map((input, index) => {
+    return this.psbt.data.inputs.map((input, index) => {
       const prevOuts = Transaction.fromHex(input.nonWitnessUtxo.toString('hex')).outs
-      const vout = this.tx.txInputs[index].index;
+      const vout = this.psbt.txInputs[index].index;
       return address.fromOutputScript(prevOuts[vout].script, this.network)
     })
   }
 
   get toAddresses() {
-    return this.tx.txOutputs.map(output => output.address).filter(address => !this.changeAddresses.includes(address));
+    return this.psbt.txOutputs.map(output => {
+      if (output.address == null) {
+        const scriptPubKey = script.decompile(output.script);
+        if (scriptPubKey.length == 2 && scriptPubKey[0] == opcodes.OP_RETURN && Buffer.isBuffer(scriptPubKey[1])) {
+          return `OP_RETURN 0x${scriptPubKey[1].toString("hex")}`;
+        } else {
+          return "Unknown";
+        }
+      } else {
+        return output.address;
+      }
+    }).filter(address => !this.changeAddresses.includes(address));
   }
 
   get changeAddresses() {
-    return this.tx.data.outputs
-      .map((output, index) => output.bip32Derivation ? this.tx.txOutputs[index].address : undefined)
+    return this.psbt.data.outputs
+      .map((output, index) => output.bip32Derivation ? this.psbt.txOutputs[index].address : undefined)
       .filter(address => !!address)
   }
 }
