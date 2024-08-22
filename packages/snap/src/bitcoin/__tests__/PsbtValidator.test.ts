@@ -186,7 +186,7 @@ describe('psbtValidator', () => {
     expect(psbtValidator.validate(signer)).toBe(true);
   });
 
-  it('should return true given a valid psbt with op return', function () {
+  it('should return true given a valid psbt with OP_RETURN', function () {
     const psbt = Psbt.fromBase64(psbtFixture.base64, { network: networks.testnet })
     psbt.addOutput({
       script: script.compile([opcodes.OP_RETURN, Buffer.alloc(20, 0)]),
@@ -201,5 +201,16 @@ describe('psbtValidator', () => {
 
     const psbtValidator = new PsbtValidator(psbt, BitcoinNetwork.Test);
     expect(psbtValidator.validate(signer)).toBe(true);
+  });
+
+  it('should throw error when OP_RETURN is too big', function () {
+    const psbt = Psbt.fromBase64(psbtFixture.base64, { network: networks.testnet })
+    psbt.addOutput({
+      script: script.compile([opcodes.OP_RETURN, Buffer.alloc(81, 0)]),
+      value: 0,
+    })
+
+    const psbtValidator = new PsbtValidator(psbt, BitcoinNetwork.Test);
+    expect(() => { psbtValidator.validate(signer) }).toThrowError(`Transaction has an invalid OP_RETURN`);
   });
 });

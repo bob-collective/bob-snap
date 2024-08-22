@@ -79,6 +79,10 @@ export class PsbtValidator {
       } else {
         const scriptPubKey = script.decompile(this.psbt.txOutputs[index].script);
         if (scriptPubKey.length == 2 && scriptPubKey[0] == opcodes.OP_RETURN && Buffer.isBuffer(scriptPubKey[1])) {
+          if (scriptPubKey[1].byteLength > 80) {
+            // miners will reject anything over 80 bytes
+            this.error = SnapError.of(PsbtValidateErrors.InvalidOpReturn);
+          }
           // as an exception we allow OP_RETURN outputs
           return true;
         }
