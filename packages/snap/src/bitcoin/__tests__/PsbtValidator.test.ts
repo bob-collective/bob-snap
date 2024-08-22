@@ -1,10 +1,11 @@
 import BIP32Factory from 'bip32';
-import { networks, Psbt } from 'bitcoinjs-lib';
+import { networks, opcodes, Psbt, script } from 'bitcoinjs-lib';
 import { PsbtValidator } from '../PsbtValidator';
 import { AccountSigner } from '../index';
 import { BitcoinNetwork } from '../../interface';
 import { psbtFixture } from './fixtures/psbt';
 import * as ecc from "@bitcoin-js/tiny-secp256k1-asmjs";
+import { PsbtHelper } from '../PsbtHelper';
 
 const getAccountSigner = () => {
   const testPrivateAccountKey = "tprv8gwYx7tEWpLxdJhEa7R8ofchqzRgme6iiuyJpegZ71XNhnAqeMjT6GV4wm3jqsUjXgXj99GB4kDminso5kxnLa6VXt3WVRzfmhbDSrfbCDv";
@@ -183,5 +184,33 @@ describe('psbtValidator', () => {
     const psbtValidator = new PsbtValidator(psbt, BitcoinNetwork.Test);
 
     expect(psbtValidator.validate(signer)).toBe(true);
+  });
+
+  it('should return true given a valid psbt with OP_RETURN', function () {
+    const psbt = Psbt.fromBase64(psbtFixture.base64, { network: networks.testnet })
+    psbt.addOutput({
+      script: script.compile([opcodes.OP_RETURN, Buffer.alloc(20, 0)]),
+      value: 0,
+    })
+
+    const psbtHelper = new PsbtHelper(psbt, BitcoinNetwork.Test);
+    expect(psbtHelper.toAddresses).toEqual([
+      'tb1qqkelutyrqmxgzd9nnfws2yk3dl600yvxagfqu7',
+      'OP_RETURN 0x0000000000000000000000000000000000000000'
+    ]);
+
+    const psbtValidator = new PsbtValidator(psbt, BitcoinNetwork.Test);
+    expect(psbtValidator.validate(signer)).toBe(true);
+  });
+
+  it('should throw error when OP_RETURN is too big', function () {
+    const psbt = Psbt.fromBase64(psbtFixture.base64, { network: networks.testnet })
+    psbt.addOutput({
+      script: script.compile([opcodes.OP_RETURN, Buffer.alloc(81, 0)]),
+      value: 0,
+    })
+
+    const psbtValidator = new PsbtValidator(psbt, BitcoinNetwork.Test);
+    expect(() => { psbtValidator.validate(signer) }).toThrowError(`Transaction has an invalid OP_RETURN`);
   });
 });

@@ -1,4 +1,4 @@
-import { Psbt } from 'bitcoinjs-lib';
+import { Psbt, opcodes, script } from 'bitcoinjs-lib';
 import { AccountSigner } from './index';
 import { BitcoinNetwork } from '../interface';
 import { PsbtHelper } from '../bitcoin/PsbtHelper';
@@ -20,15 +20,15 @@ function checkForInput<PsbtInput>(inputs: PsbtInput[], inputIndex: number): Psbt
 
 export class PsbtValidator {
   static FEE_THRESHOLD = 10000000;
-  private readonly tx: Psbt;
+  private readonly psbt: Psbt;
   private readonly snapNetwork: BitcoinNetwork;
   private psbtHelper: PsbtHelper;
   private error: SnapError | null = null;
 
   constructor(psbt: Psbt, network: BitcoinNetwork) {
-    this.tx = psbt;
+    this.psbt = psbt;
     this.snapNetwork = network;
-    this.psbtHelper = new PsbtHelper(this.tx, network);
+    this.psbtHelper = new PsbtHelper(this.psbt, network);
   }
 
   get coinType() {
@@ -36,7 +36,7 @@ export class PsbtValidator {
   }
 
   allInputsHaveRawTxHex() {
-    const result = this.tx.data.inputs.every((input, index) => !!input.nonWitnessUtxo);
+    const result = this.psbt.data.inputs.every((input, index) => !!input.nonWitnessUtxo);
     if (!result) {
       this.error = SnapError.of(PsbtValidateErrors.InputsDataInsufficient);
     }
@@ -44,7 +44,7 @@ export class PsbtValidator {
   }
 
   everyInputMatchesNetwork() {
-    const result = this.tx.data.inputs.every(input => {
+    const result = this.psbt.data.inputs.every(input => {
       if (isTaprootInput(input)) {
         return input.tapBip32Derivation.every(derivation => {
           const { coinType } = fromHdPathToObj(derivation.path);
@@ -65,7 +65,7 @@ export class PsbtValidator {
 
   everyOutputMatchesNetwork() {
     const addressPattern = this.snapNetwork === BitcoinNetwork.Main ? BITCOIN_MAIN_NET_ADDRESS_PATTERN : BITCOIN_TEST_NET_ADDRESS_PATTERN;
-    const result = this.tx.data.outputs.every((output, index) => {
+    const result = this.psbt.data.outputs.every((output, index) => {
       if (output.tapBip32Derivation) {
         return output.tapBip32Derivation.every(derivation => {
           const { coinType } = fromHdPathToObj(derivation.path)
@@ -77,7 +77,16 @@ export class PsbtValidator {
           return Number(coinType) === this.coinType
         })
       } else {
-        const address = this.tx.txOutputs[index].address;
+        const scriptPubKey = script.decompile(this.psbt.txOutputs[index].script);
+        if (scriptPubKey.length == 2 && scriptPubKey[0] == opcodes.OP_RETURN && Buffer.isBuffer(scriptPubKey[1])) {
+          if (scriptPubKey[1].byteLength > 80) {
+            // miners will reject anything over 80 bytes
+            this.error = SnapError.of(PsbtValidateErrors.InvalidOpReturn);
+          }
+          // as an exception we allow OP_RETURN outputs
+          return true;
+        }
+        const address = this.psbt.txOutputs[index].address;
         return addressPattern.test(address);
       }
     })
@@ -89,12 +98,12 @@ export class PsbtValidator {
   }
 
   allInputsBelongToCurrentAccount(accountSigner: AccountSigner) {
-    const result = this.tx.txInputs.every((_, index) => {
-      const input = checkForInput(this.tx.data.inputs, index);
+    const result = this.psbt.txInputs.every((_, index) => {
+      const input = checkForInput(this.psbt.data.inputs, index);
       if (isTaprootInput(input)) {
         return tapInputHasHDKey(input, accountSigner);
       } else {
-        return this.tx.inputHasHDKey(index, accountSigner);
+        return this.psbt.inputHasHDKey(index, accountSigner);
       }
     });
     if (!result) {
@@ -104,11 +113,11 @@ export class PsbtValidator {
   }
 
   changeAddressBelongsToCurrentAccount(accountSigner: AccountSigner) {
-    const result = this.tx.data.outputs.every((output, index) => {
+    const result = this.psbt.data.outputs.every((output, index) => {
       if (output.tapBip32Derivation) {
         return tapOutputHasHDKey(output, accountSigner);
       } else if (output.bip32Derivation) {
-        return this.tx.outputHasHDKey(index, accountSigner);
+        return this.psbt.outputHasHDKey(index, accountSigner);
       }
       return true;
     });
@@ -127,12 +136,12 @@ export class PsbtValidator {
   }
 
   witnessUtxoValueMatchesNoneWitnessOnes() {
-    const hasWitnessUtxo = this.tx.data.inputs.some((_, index) => this.tx.getInputType(index) === "witnesspubkeyhash");
+    const hasWitnessUtxo = this.psbt.data.inputs.some((_, index) => this.psbt.getInputType(index) === "witnesspubkeyhash");
     if (!hasWitnessUtxo) {
       return true;
     }
 
-    const witnessAmount = this.tx.data.inputs.reduce((total, input, index) => {
+    const witnessAmount = this.psbt.data.inputs.reduce((total, input, index) => {
       return total + input.witnessUtxo.value;
     }, 0);
     const result = this.psbtHelper.inputAmount === witnessAmount;

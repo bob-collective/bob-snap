@@ -26,5 +26,9 @@ export const PsbtValidateErrors = {
   AmountNotMatch: {
     code: 10007,
     message: 'Transaction input amount not match'
+  },
+  InvalidOpReturn: {
+    code: 10008,
+    message: 'Transaction has an invalid OP_RETURN'
   }
 }
