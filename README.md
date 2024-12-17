@@ -17,11 +17,11 @@ Allow users to:
 
 Snaps is a system that allows developers to safely build and expand the capabilities of MetaMask. It is a program that is run in an isolated environment with a limited set of capabilities, that can customize and modify MetaMask's wallet experience for end users. For example, a snap can add new APIs to MetaMask thus adding support for different blockchains or modify existing functionalities using internal APIs.
 
-Additional information can be found [here](https://docs.metamask.io/guide/snaps.html).
+Additional information can be found [in the MetaMask Snaps docs](https://docs.metamask.io/guide/snaps.html).
 
-## Demo
+## Learn More
 
-A demo application using this package can be found at [https://ordinals.gobob.xyz](https://ordinals.gobob.xyz). Further documentation can be found here: [https://docs.gobob.xyz/docs/build/examples/metamask-ordinals/](https://docs.gobob.xyz/docs/build/examples/metamask-ordinals/)
+Further documentation can be found here: [https://docs.gobob.xyz/learn/builder-guides/metamask-snap/](https://docs.gobob.xyz/learn/builder-guides/metamask-snap/)
 
 ## Acknowledgements
 
